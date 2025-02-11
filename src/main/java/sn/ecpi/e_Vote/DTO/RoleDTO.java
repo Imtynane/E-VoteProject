@@ -11,4 +11,6 @@ public class RoleDTO {
     private UUID roleId;
 
     private String roleName;
+
+    private UUID userId;
 }

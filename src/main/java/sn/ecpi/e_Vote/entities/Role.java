@@ -15,4 +15,6 @@ public class Role {
     private UUID roleId;
     @Column(nullable = false)
     private String roleName;
+    @Column(nullable = false)
+    private UUID userId; // Ajout de la propriété userId
 }

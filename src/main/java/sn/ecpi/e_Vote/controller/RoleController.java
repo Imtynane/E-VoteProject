@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import sn.ecpi.e_Vote.entities.Role;
 import sn.ecpi.e_Vote.repository.RoleRepository;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -22,8 +23,10 @@ public class RoleController {
 
     @GetMapping("/{roleId}")
     public ResponseEntity<Role> getRole(@PathVariable UUID roleId) {
-        Role role = roleRepository.findById(roleId)
-                .orElseThrow(()-> new RuntimeException("Rôle non trouvé avec l'ID: " + roleId));
+        Role role = roleRepository.findByRoleId(roleId); // Utilisation de la méthode findByRoleId
+        if (role == null) {
+            throw new RuntimeException("Rôle non trouvé avec l'Id: " + roleId);
+        }
         return ResponseEntity.ok(role);
     }
 
@@ -31,6 +34,15 @@ public class RoleController {
     public ResponseEntity<Role> createRole(@RequestBody Role role) {
         Role createdRole = roleRepository.save(role);
         return  new ResponseEntity<>(createdRole, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/byRoleName") // Endpoint correspondant à la méthode findByRoleName
+    public ResponseEntity<List<Role>> getRoleByRoleName(@RequestParam String roleName){
+        List <Role> roles = roleRepository.findByRoleName(roleName);// Utilisation de la méthode findByRoleName
+        if (roles.isEmpty()){
+            throw new RuntimeException("Aucun rôle trouvé avec le nom: " + roleName);
+        }
+        return ResponseEntity.ok(roles);
     }
 
     @PutMapping("/{roleId}")
@@ -49,20 +61,11 @@ public class RoleController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/byName")
-    public  ResponseEntity<Role> getRoleByName(@RequestParam String name) {
-        Role role = roleRepository.findByName(name);
-        if (role == null) {
-            throw new RuntimeException("Rôle non trouvé avec l'ID: " + name);
-        }
-        return ResponseEntity.ok(role);
-    }
-
     @GetMapping("/byUserId/{userId}")
     public ResponseEntity<Role> getRoleByUserId(@PathVariable UUID userId) {
         Role role = roleRepository.findByUserId(userId);
         if (role == null) {
-            throw new RuntimeException("Rôle non trouvé avec l'ID: " + userId);
+            throw new RuntimeException("Rôle non trouvé pour l'utilisateur avec l'ID: " + userId);
         }
         return ResponseEntity.ok(role);
     }
